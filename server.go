@@ -95,7 +95,7 @@ func (this *Server) Handler(conn net.Conn) {
 	for {
 		select {
 		case <-isLive:
-		case <-time.After(time.Second * 10):
+		case <-time.After(time.Second * 300):
 			// 已经超时
 			// 将当前的 user 强制关闭
 			user.SendMsg("长时间不活跃，被踢除")

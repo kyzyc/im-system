@@ -70,6 +70,29 @@ func (this *User) DoMessage(msg string) {
 			this.SendMsg(onlineMsg)
 		}
 		this.server.mapLock.Unlock()
+	} else if len(msg) > 4 && msg[:3] == "to|" {
+		// 消息格式：to|张三|消息内容
+		// 1. 获取对方的用户名
+		remoteName := strings.Split(msg, "|")[1]
+		if remoteName == "" {
+			this.SendMsg("消息格式有误，用户名不正确\n")
+			return
+		}
+
+		// 2. 根据用户名 得到对方的 user 对象
+		remoteUser, ok := this.server.OnlineMap[remoteName]
+		if !ok {
+			this.SendMsg("该用户名不存在\n")
+			return
+		}
+
+		// 3. 获取消息内容，通过对方的 user 对象发送消息内容
+		content := strings.Split(msg, "|")[2]
+		if content == "" {
+			this.SendMsg("无消息内容，请重发\n")
+			return
+		}
+		remoteUser.SendMsg(this.Name + "说：" + content + "\n")
 	} else if len(msg) > 7 && msg[:7] == "rename|" {
 		// 消息格式：rename|张三
 		newName := strings.Split(msg, "|")[1]

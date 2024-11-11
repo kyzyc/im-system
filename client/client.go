@@ -47,6 +47,35 @@ func (client *Client) DealResponse() {
 	}
 }
 
+func (client *Client) PublicChat() {
+	fmt.Println(">>>>请输入消息，exit表示退出：")
+	var msg string
+	_, err := fmt.Scanln(&msg)
+	if err != nil {
+		fmt.Println("fmt.Scanln err:", err)
+		return
+	}
+
+	for msg != "exit" {
+		sendMsg := msg + "\n"
+		_, err = client.conn.Write([]byte(sendMsg))
+		if err != nil {
+			fmt.Println("conn.Wirte err:", err)
+			break
+		}
+
+		msg = ""
+		fmt.Println(">>>>请输入消息，exit表示退出：")
+		_, err = fmt.Scanln(&msg)
+		if err != nil {
+			fmt.Println("fmt.Scanln err:", err)
+			return
+		}
+	}
+
+	return
+}
+
 func (client *Client) UpdateName() bool {
 	fmt.Printf(">>>>请输入用户名：")
 	_, err := fmt.Scanln(&client.Name)
@@ -96,6 +125,7 @@ func (client *Client) Run() {
 		case 1:
 			// 公聊模式
 			fmt.Println("公聊模式选择...")
+			client.PublicChat()
 		case 2:
 			// 私聊模式
 			fmt.Println("私聊模式选择...")
